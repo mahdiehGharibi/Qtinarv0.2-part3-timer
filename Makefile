@@ -1,22 +1,48 @@
+# Compiler and flags
 CC = gcc
-AS = gcc
+CFLAGS = -m32 -ffreestanding -fno-pie -fno-stack-protector -O0 -Wall -Wextra
+ASFLAGS = -m32 -c
 LD = ld
+LDFLAGS = -m elf_i386 -T linker.ld
 
-CFLAGS = -m32 -ffreestanding -fno-stack-protector -fno-pic -Wall -Wextra
-ASFLAGS = -m32
-LDFLAGS = -m elf_i386
+SRC = src
+CPU = $(SRC)/cpu
+DRIVERS = $(SRC)/drivers
+KERNEL = $(SRC)/kernel
 
-SRC = src/boot.s src/gdt.c src/idt.c src/isr.c src/interrupts.s src/kernel.c src/vga.c
-OBJ = $(SRC:.c=.o)
-OBJ := $(OBJ:.s=.o)
+OBJS = \
+    $(CPU)/idt.o \
+    $(CPU)/isr.o \
+    $(CPU)/irq.o \
+    $(CPU)/pic.o \
+    $(CPU)/ports.o \
+    $(CPU)/interrupts.o \
+    $(DRIVERS)/screen.o \
+    $(DRIVERS)/keyboard.o \
+    $(KERNEL)/kernel.o
 
-all: kernel.bin
+all: kernel.bin os.iso
 
-kernel.bin: $(OBJ) linker.ld
-    $(LD) $(LDFLAGS) -T linker.ld -o kernel.bin $(OBJ)
+%.o: %.c
+[TAB]$(CC) $(CFLAGS) -c $< -o $@
 
-run: kernel.bin
-    qemu-system-i386 -kernel kernel.bin
+%.o: %.s
+[TAB]$(CC) $(ASFLAGS) $< -o $@
+
+kernel.bin: $(OBJS)
+[TAB]$(LD) $(LDFLAGS) -o kernel.bin $(OBJS)
+
+os.iso: kernel.bin
+[TAB]mkdir -p iso/boot/grub
+[TAB]cp kernel.bin iso/boot/kernel.bin
+[TAB]echo 'set timeout=0' > iso/boot/grub/grub.cfg
+[TAB]echo 'set default=0' >> iso/boot/grub/grub.cfg
+[TAB]echo 'menuentry "QtinarOS" { multiboot /boot/kernel.bin }' >> iso/boot/grub/grub.cfg
+[TAB]grub-mkrescue -o os.iso iso
 
 clean:
-    rm -f $(OBJ) kernel.bin
+[TAB]rm -f $(CPU)/*.o $(DRIVERS)/*.o $(KERNEL)/*.o kernel.bin os.iso
+[TAB]rm -rf iso
+
+run: os.iso
+[TAB]qemu-system-i386 -cdrom os.iso
