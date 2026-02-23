@@ -1,56 +1,42 @@
 #include "input.h"
+#include "commands.h"          
 #include "../drivers/screen.h"
-#include "commands.h"
-#include <stddef.h>
+#include "../libc/string.h"
 
-static char* buffer = 0;
-static size_t length = 0;
-static size_t capacity = 0;
+static char input_buffer[256];
+static int input_length = 0;
 
-static void ensure_capacity(size_t new_len) {
-    if (new_len <= capacity) return;
-
-    size_t new_cap = capacity == 0 ? 64 : capacity * 2;
-    while (new_cap < new_len) new_cap *= 2;
-
-    char* new_buf = (char*)malloc(new_cap);
-    for (size_t i = 0; i < length; i++)
-        new_buf[i] = buffer[i];
-
-    buffer = new_buf;
-    capacity = new_cap;
-}
-
-void input_add(char c) {
-    ensure_capacity(length + 2);
-    buffer[length++] = c;
-    buffer[length] = 0;
-
-    char s[2] = {c, 0};
-    kprint(s);
+void input_init() {
+    input_length = 0;
+    input_buffer[0] = '\0';
 }
 
 void input_backspace() {
-    if (length == 0) return;
-
-    length--;
-    buffer[length] = 0;
-
-    kprint_backspace();
+    if (input_length > 0) {
+        input_length--;
+        input_buffer[input_length] = '\0';
+        kprint_backspace();
+    }
 }
 
+void input_append(char c) {
+    if (input_length < 255) {
+        input_buffer[input_length++] = c;
+        input_buffer[input_length] = '\0';
+        char s[2] = { c, '\0' };
+        kprint(s);
+    }
+}
 
 void input_submit() {
-    if (length == 0) {
-        kprint("\n> ");
-        return;
-    }
-
-    buffer[length] = 0;
     kprint("\n");
 
-    run_command(buffer);
+    handle_command(input_buffer);   
 
-    length = 0;
+    input_length = 0;
+    input_buffer[0] = '\0';
+
+    set_color(0xA, 0x0); 
     kprint("> ");
+    set_color(0x7, 0x0);
 }

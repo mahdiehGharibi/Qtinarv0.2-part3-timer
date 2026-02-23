@@ -1,7 +1,8 @@
 #ifndef PIC_H
 #define PIC_H
 
-void pic_remap(int offset1, int offset2);
-void pic_init();
+#include <stdint.h>
+
+void pic_remap(uint8_t offset1, uint8_t offset2);
 
 #endif

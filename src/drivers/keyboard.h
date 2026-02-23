@@ -1,9 +1,9 @@
 #ifndef KEYBOARD_H
 #define KEYBOARD_H
 
-#include <stdint.h>
+#include "../cpu/isr.h"
 
-void keyboard_init();
-void keyboard_handler();
+void keyboard_init(void);
+void keyboard_handler(registers_t* regs);
 
 #endif

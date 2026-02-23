@@ -1,8 +1,9 @@
 #ifndef INPUT_H
 #define INPUT_H
 
-void input_add(char c);
-void input_backspace();
-void input_submit();
+void input_init(void);
+void input_backspace(void);
+void input_append(char c);
+void input_submit(void);
 
 #endif

@@ -1,6 +1,6 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-void run_command(const char* cmd);
+void handle_command(char *input);
 
 #endif
