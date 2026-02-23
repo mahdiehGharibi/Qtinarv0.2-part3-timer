@@ -4,6 +4,7 @@ QtinarOS v0.2 is a small educational 32‑bit operating system built from scratc
 
 This project is part of a learning journey into low‑level OS development, focusing on clarity, correctness, and clean modular design.
 
+![OutPut](https://github.com/mahdiehGharibi/Qtinarv0.2-part3-timer/blob/f682287df5c38a015b11e3d813de5699f902d74c/OutPut.png)
 
 
 ## ✨ What’s implemented in v0.2 (part 3)
