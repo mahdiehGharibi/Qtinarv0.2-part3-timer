@@ -54,7 +54,7 @@ You will see:
 
 - Timer interrupts running in the background
 
-##🧠 Learning Goals of This Version
+## 🧠 Learning Goals of This Version
 v0.2 is designed to teach:
 
 - How hardware interrupts work
